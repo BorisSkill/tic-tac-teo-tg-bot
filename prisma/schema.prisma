@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Users {
+  id                     Int     @id @default(autoincrement())
+  userID                 String  @unique
+  userName               String
+  firstName              String
+  lastName               String
+  isPremium              Boolean
+  languageCode           String
+  addedToAttachementMenu Boolean
+
+  matchWon  Int @default(0)
+  matchLost Int @default(0)
+  matchDraw Int @default(0)
+
+  battleWon  Int @default(0)
+  battleLost Int @default(0)
+  battleDraw Int @default(0)
+}
+
+model Game {
+  id String @id
+
+  type         String   @default("CHILL")
+  creatorId    String
+  otherUserId  String   @default("")
+  userTurnId   String   @default("")
+  creationDate DateTime @default(now())
+  status       String   @default("ONGOING")
+
+  creatorMessageId   String @default("")
+  otherUserMessageId String @default("")
+
+  boards Board[]
+}
+
+model Board {
+  id String @id @default(cuid())
+
+  position Int
+  sign     String
+
+  gameId String // Foreign key 
+  game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, position])
+}
+
+model Broadcast {
+  id String @id @default(uuid())
+
+  isCopy Boolean @default(true)
+  status String  @default("idle")
+}

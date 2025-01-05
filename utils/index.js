@@ -57,6 +57,9 @@ export const updateBoard = async (pos, sign, gameId, type, otherUserId, ctx) => 
     const boards = await prisma.board.findMany({
         where: {
             gameId
+        },
+        orderBy: {
+            position: "asc"
         }
     })
 
